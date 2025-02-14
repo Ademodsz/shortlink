@@ -24,17 +24,31 @@
     </div>
 
     <script>
+        // Daftar shortlink khusus
+        const specialLinks = {
+            "ademods": "https://ademodsx.github.io/ademods",
+            "github": "https://github.com",
+            "google": "https://www.google.com"
+        };
+
         function generateShortlink() {
             const originalLink = document.getElementById("originalLink").value;
-            const shortName = document.getElementById("shortName").value;
+            const shortName = document.getElementById("shortName").value.toLowerCase();
 
-            if (originalLink === "" || shortName === "") {
+            if (shortName === "" || originalLink === "") {
                 alert("Harap isi semua kolom!");
                 return;
             }
 
-            const baseURL = window.location.origin + window.location.pathname;
-            const shortURL = baseURL + "#" + encodeURIComponent(shortName) + "=" + encodeURIComponent(originalLink);
+            let shortURL = "";
+
+            // Jika nama shortlink ada di daftar khusus, gunakan URL yang sudah ditentukan
+            if (specialLinks[shortName]) {
+                shortURL = specialLinks[shortName];
+            } else {
+                const baseURL = window.location.origin + window.location.pathname;
+                shortURL = baseURL + "#" + encodeURIComponent(shortName) + "=" + encodeURIComponent(originalLink);
+            }
 
             document.getElementById("shortlink").href = shortURL;
             document.getElementById("shortlink").innerText = shortURL;
@@ -42,13 +56,15 @@
         }
 
         function checkRedirect() {
-            const hash = window.location.hash.substring(1); 
+            const hash = window.location.hash.substring(1);
             if (hash.includes("=")) {
                 const params = hash.split("=");
                 const shortName = decodeURIComponent(params[0]);
                 const originalLink = decodeURIComponent(params[1]);
 
-                if (originalLink.startsWith("http")) {
+                if (specialLinks[shortName]) {
+                    window.location.href = specialLinks[shortName];
+                } else if (originalLink.startsWith("http")) {
                     window.location.href = originalLink;
                 } else {
                     document.body.innerHTML = "<h2>Link tidak valid!</h2>";
