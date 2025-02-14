@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shortlink Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+        input, button { margin: 5px; padding: 8px; }
+        #shortlink-container { margin-top: 20px; display: none; }
+    </style>
+</head>
+<body>
+    <h1>Shortlink Generator</h1>
+    <p>Masukkan link asli dan nama shortlink</p>
+
+    <input type="text" id="originalLink" placeholder="Masukkan link asli" size="40">
+    <input type="text" id="shortName" placeholder="Nama shortlink" size="20">
+    <button onclick="generateShortlink()">Buat Shortlink</button>
+
+    <div id="shortlink-container">
+        <h3>Shortlink Anda:</h3>
+        <a id="shortlink" href="#" target="_blank"></a>
+    </div>
+
+    <script>
+        function generateShortlink() {
+            const originalLink = document.getElementById("originalLink").value;
+            const shortName = document.getElementById("shortName").value;
+
+            if (originalLink === "" || shortName === "") {
+                alert("Harap isi semua kolom!");
+                return;
+            }
+
+            const baseURL = window.location.origin + window.location.pathname;
+            const shortURL = baseURL + "#" + encodeURIComponent(shortName) + "=" + encodeURIComponent(originalLink);
+
+            document.getElementById("shortlink").href = shortURL;
+            document.getElementById("shortlink").innerText = shortURL;
+            document.getElementById("shortlink-container").style.display = "block";
+        }
+
+        function checkRedirect() {
+            const hash = window.location.hash.substring(1); 
+            if (hash.includes("=")) {
+                const params = hash.split("=");
+                const shortName = decodeURIComponent(params[0]);
+                const originalLink = decodeURIComponent(params[1]);
+
+                if (originalLink.startsWith("http")) {
+                    window.location.href = originalLink;
+                } else {
+                    document.body.innerHTML = "<h2>Link tidak valid!</h2>";
+                }
+            }
+        }
+
+        checkRedirect();
+    </script>
+</body>
+</html>
